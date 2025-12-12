@@ -33,6 +33,8 @@ while game:
         dom_2.bull.update()
 
     for e in event.get():
+        if e.type == MOUSEBUTTONDOWN and e.button == 1:
+            dom_2.shooting_stars()
         if e.type == KEYDOWN:
             if e.key == K_SPACE:
                 cirbi.play()
