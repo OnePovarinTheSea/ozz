@@ -6,11 +6,19 @@ RED = (255,0,0)
 YELLOW = (255,255,0)
 WIN_W = 700
 WIN_H = 500
-FPS = 150
+FPS = 100
 X1, Y1 = 50 , 350
 X2, Y2 = 625 , 300
 SIZE_BFG = 300,100
 SIZE_FUFEL = 25
+VORAGI = {
+    'src/Demon_noname_1.png' : (60 ,60),
+    'src/Demon_noname_2.png' : (60, 100),
+    'src/Demon_boss_noname_3.png' : (60, 130)
+}
+WIN_SCORE = 10
+LOSE_SCORE = -5
+
 
 class WorkClass(sprite.Sprite):
     def __init__(self, img, x, y, w, h):
@@ -27,22 +35,24 @@ class WorkClass(sprite.Sprite):
         widow.blit(self.image,(self.rect.x, self.rect.y))
 
 class Puu(WorkClass):
-    def __init__(self, img, x, y, size, blitz=10):
+    def __init__(self, img, x, y, size, blitz=6):
         super().__init__(img, x, y, size[0],size[1])
         self.blitz = blitz
         self.score = 0
         self.bull = sprite.Group()
         self.isleft = True
+        self.image_left = self.image
+        self.image_right = transform.flip(self.image, True, False)
     def update(self, right=K_d, left=K_a):
         keys_pressed = key.get_pressed()
         if keys_pressed[left] and self.rect.centerx > 0:
             self.rect.x -= self.blitz
             self.isleft = True
-        #       self.image = transform.flip(self.image, True, False)
+            self.image = self.image_left
         if keys_pressed[right] and self.rect.centerx < WIN_W:
             self.rect.x += self.blitz
             self.isleft = False
-    #        self.image = transform.flip(self.image, True, False)
+            self.image = self.image_right
     def shooting_stars(self):
         bull = INMB('src/Bullet_BFG9000.png',self.rect.centerx-22,self.rect.top,(SIZE_FUFEL,SIZE_FUFEL))
         if self.isleft :
@@ -54,7 +64,7 @@ class Puu(WorkClass):
 class INMB(WorkClass):
     def __init__(self, img, x, y, size, blitz=5):
         super().__init__(img, x, y, size[0], size[1])
-        self.blitzx = blitz//3
+        self.blitzx = blitz//4
         self.blitzy = blitz
     def update(self):
         self.rect.x -= self.blitzx
@@ -71,15 +81,24 @@ class Enemies(WorkClass):
         super().__init__(img, x, y, size[0], size[1])
         self.blitzy = blitz
         self.restock()
-    def update(self):
+    def update(self,dom_2):
         self.rect.x += self.blitzx
         self.rect.y += self.blitzy
         if  self.rect.x > WIN_W or self.rect.y > WIN_H:
             self.restock()
+            dom_2.score -= 1
+
     def restock(self):
+        self.blitzx = randint(1, 5) * choice((1, -1))
+        img = choice(list(VORAGI.keys()))
+        self.image = transform.scale(
+            image.load(img),
+            VORAGI[img]
+        )
+        self.rect = self.image.get_rect()
         self.rect.x = randint(0, WIN_W - self.rect.width)
         self.rect.y = 0
-        self.blitzx = randint(1, 7) * choice((1, -1))
+
 
 class Area:
     def __init__(self,x,y,w,h,color=RED):
