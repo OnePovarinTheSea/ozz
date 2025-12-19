@@ -65,6 +65,16 @@ while game:
         if e.type == KEYDOWN:
             if e.key == K_SPACE:
                 cirbi.play()
+            if e.key == K_f:
+                if finish_cleaner_fordishes:
+                    dom_2.score = 0
+                    for vrag in vragi:
+                        vrag.kill()
+                    for i in range(4):
+                        vrag = Enemies('src/Demon_noname_1.png', randint(0, WIN_W), 0, (1, 1))
+                        vragi.add(vrag)
+
+                    finish_cleaner_fordishes = False
         # выйти, если нажат "крестик"
         if e.type == QUIT:
             game = False
